@@ -183,7 +183,7 @@ def gcs_to_bq(bucket_name, file_name, bq_client):
     # ファイルフォーマットはCSV(default: CSV)
     job_config.source_format = bigquery.SourceFormat.CSV
     # テーブルを上書き更新(default: WRITE_APPEND)
-    job_config.write_disposition = bigquery.WriteDisposition.WRITE_TRUNCATE
+    job_config.write_disposition = bigquery.WriteDisposition.WRITE_APPEND
 
     # loadジョブを実行開始
     load_job = bq_client.load_table_from_uri(source_uri, dataset_ref.table(DESTINATION_TABLE_NAME), job_config=job_config)
