@@ -11,6 +11,10 @@ DESTINATION_TABLE_NAME = 'raw_data'
 
 def main(data, context):
     """GCSのバケットで更新があった場合に実行される関数
+
+    Args:
+        data (dict): 対象のCloud Storage objectデータ
+        context (google.cloud.functions_v1.context.Context): コンテキスト
     """
     # BigQueryのClientインスタンスを作成
     bq_client = bigquery.client.Client(project=PROJECT_ID)
@@ -26,8 +30,15 @@ def main(data, context):
 
 def gcs_to_bq(bucket_name, file_name, bq_client):
     """GCSバケットのCSVファイルをBigQueryにloadする関数
-    """
 
+    Args:
+        bucket_name (str): 対象のGCSバケット名
+        file_name (str): 対象のファイル名、"teamName_YYYYMMDD.csv"
+        bq_client (google.cloud.bigquery.client.Client): BigQueryのClientインスタンス
+
+    Returns:
+        load_job.job_id (google.cloud.bigquery.job.load.LoadJob): 実行したloadジョブのID
+    """
     source_uri = 'gs://{}/{}'.format(bucket_name, file_name)
     print('import from {} to {}'.format(source_uri, DESTINATION_TABLE_NAME))
     dataset_ref = bigquery.dataset.DatasetReference(PROJECT_ID, DATASET_NAME)
@@ -56,8 +67,7 @@ def gcs_to_bq(bucket_name, file_name, bq_client):
     # loadジョブの完了を待つ
     result = load_job.result()
     print('Job finished')
-
-
+    
     # loadしたテーブルの行数を取得して出力
     print('Loaded {} rows.'.format(result.output_rows))
 
