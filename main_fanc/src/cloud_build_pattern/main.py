@@ -31,8 +31,7 @@ def main():
     storage_client = storage.Client()
     schema_bucket = storage_client.bucket(schema_bucket_name)
     blob = schema_bucket.blob(schema_object_name)
-    schema_json = json.loads(blob.download_as_string())
-
+    schema_json = blob.download_as_string()
 
     # BQ コマンド実行
     exit_status = subprocess.call([
