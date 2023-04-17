@@ -1,6 +1,5 @@
 import base64
 import json
-import os
 import subprocess
 
 from flask import Flask, request
@@ -8,10 +7,10 @@ from flask import Flask, request
 app = Flask(__name__)
 
 # required
-PROJECT_ID = os.environ['GCP_PROJECT']
-DATASET_NAME = os.environ['BQ_DATASET_NAME']
+PROJECT_ID = 'ca-miyazaki-test'
+DATASET_NAME = 'etl_training_dataset'
 # optional
-TABLE_NAME = os.getenv('BQ_TABLE_NAME', 'cloud_run_pattern')
+TABLE_NAME = 'raw_data'
 
 
 @app.route("/", methods=["POST"])
