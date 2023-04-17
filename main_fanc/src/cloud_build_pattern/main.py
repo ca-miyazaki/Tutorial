@@ -39,6 +39,7 @@ def main():
         "--schema", schema_json.decode('utf-8'),
         "--replace",
         "--source_format", "CSV",
+        "--skip_leading_rows", "1"
         f"{DATASET_NAME}.{TABLE_NAME}",
         f"gs://{bucket}/{name}"])
 
