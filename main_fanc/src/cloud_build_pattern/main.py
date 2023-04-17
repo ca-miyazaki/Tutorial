@@ -2,6 +2,8 @@ import base64
 import json
 import os
 import subprocess
+from google.cloud import storage
+
 
 from flask import Flask, request
 
@@ -21,11 +23,20 @@ def main():
     name = data["name"]
     print("Start load CSV on gs://{}/{} to BigQuery table {}.{}.{}".format(
         bucket, name, PROJECT_ID, DATASET_NAME, TABLE_NAME))
+    
+    # schema.jsonが保存されているGCSのバケットとオブジェクトを指定
+    schema_bucket_name = 'miyazaki-tutorial'
+    schema_object_name = 'schema.json'
+    # GCSのバケットとオブジェクトを使用して、スキーマ定義JSONファイルを読み込む
+    storage_client = storage.Client()
+    schema_bucket = storage_client.bucket(schema_bucket_name)
+    blob = schema_bucket.blob(schema_object_name)
+    url = blob.generate_signed_url(expiration=600)
 
     # BQ コマンド実行
     exit_status = subprocess.call([
         "bq", "--project_id", PROJECT_ID, "load",
-        "--schema", "gs://miyazaki-tutorial/schema.json",
+        "--schema", url,
         "--replace",
         "--source_format", "CSV",
         f"{DATASET_NAME}.{TABLE_NAME}",
