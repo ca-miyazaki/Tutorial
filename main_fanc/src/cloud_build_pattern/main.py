@@ -31,12 +31,13 @@ def main():
     storage_client = storage.Client()
     schema_bucket = storage_client.bucket(schema_bucket_name)
     blob = schema_bucket.blob(schema_object_name)
-    url = blob.generate_signed_url(expiration=600)
+    schema_json = json.loads(blob.download_as_string())
+
 
     # BQ コマンド実行
     exit_status = subprocess.call([
         "bq", "--project_id", PROJECT_ID, "load",
-        "--schema", url,
+        "--schema", schema_json,
         "--replace",
         "--source_format", "CSV",
         f"{DATASET_NAME}.{TABLE_NAME}",
