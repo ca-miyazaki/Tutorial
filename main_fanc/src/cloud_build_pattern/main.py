@@ -31,15 +31,15 @@ def main():
     storage_client = storage.Client()
     schema_bucket = storage_client.bucket(schema_bucket_name)
     blob = schema_bucket.blob(schema_object_name)
-    schema_json = blob.download_as_string()
+    schema_json = json.loads(blob.download_as_string())
 
     # BQ コマンド実行
     exit_status = subprocess.call([
         "bq", "--project_id", PROJECT_ID, "load",
-        "--schema", schema_json.decode('utf-8'),
+        "--schema", "schema_json",
         "--replace",
         "--source_format", "CSV",
-        "--skip_leading_rows", 1,
+        "--skip_leading_rows", "1",
         f"{DATASET_NAME}.{TABLE_NAME}",
         f"gs://{bucket}/{name}"])
 
