@@ -25,7 +25,7 @@ def main():
     # BQ コマンド実行
     exit_status = subprocess.call([
         "bq", "--project_id", PROJECT_ID, "load",
-        "--autodetect",
+        "--schema", "gs://miyazaki-tutorial/schema.json",
         "--replace",
         "--source_format", "CSV",
         f"{DATASET_NAME}.{TABLE_NAME}",
