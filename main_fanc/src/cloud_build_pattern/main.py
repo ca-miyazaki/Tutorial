@@ -35,7 +35,7 @@ def main():
 
     # BQ コマンド実行
     exit_status = subprocess.call(
-        f"bq --project_id {PROJECT_ID} load --schema '{json.dumps(schema_json)}' --replace --source_format CSV --skip_leading_rows 1 {DATASET_NAME}.{TABLE_NAME} gs://{bucket}/{name}",
+        f"bq --project_id {PROJECT_ID} load --schema {schema_json} --replace --source_format CSV --skip_leading_rows 1 {DATASET_NAME}.{TABLE_NAME} gs://{bucket}/{name}",
         shell=True
     )
 
