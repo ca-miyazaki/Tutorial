@@ -34,10 +34,14 @@ def main():
     schema_json = json.loads(blob.download_as_string())
 
     # BQ コマンド実行
-    exit_status = subprocess.call(
-        f"bq --project_id {PROJECT_ID} load --schema {schema_json} --source_format CSV --skip_leading_rows 1 --replace {DATASET_NAME}.{TABLE_NAME} gs://{bucket}/{name}",
-        shell=True
-    )
+    exit_status = subprocess.call([
+        "bq", "--project_id", PROJECT_ID, "load",
+        "--scheema", f"{schema_json}",
+        "--replace",
+        "--skip_leading_rows", "1",
+        "--source_format", "CSV",
+        f"{DATASET_NAME}.{TABLE_NAME}",
+        f"gs://{bucket}/{name}"])
 
     if exit_status != 0:
         # Cloud Run 上で実行するコードが crush すると、Pub/Sub message が ack されない (レスポンスコード 500 が返るため)。
