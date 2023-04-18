@@ -41,7 +41,7 @@ def main():
     # BQ コマンド実行
     exit_status = subprocess.call([
         "bq", "--project_id", PROJECT_ID, "load",
-        "--scheema", schema_path,
+        "--schema", schema_path,
         "--replace",
         "--skip_leading_rows", "1",
         "--source_format", "CSV",
