@@ -2,6 +2,7 @@ import base64
 import json
 import os
 import subprocess
+import tempfile
 from google.cloud import storage
 
 
@@ -32,11 +33,15 @@ def main():
     schema_bucket = storage_client.bucket(schema_bucket_name)
     blob = schema_bucket.blob(schema_object_name)
     schema_json = json.loads(blob.download_as_string())
+    # スキーマ定義JSONファイルを一時ファイルとして保存する
+    with tempfile.NamedTemporaryFile(mode="w", delete=False) as f:
+        json.dump(schema_json, f)
+        schema_path = f.name
 
     # BQ コマンド実行
     exit_status = subprocess.call([
         "bq", "--project_id", PROJECT_ID, "load",
-        "--scheema", f"{schema_json}",
+        "--scheema", schema_path,
         "--replace",
         "--skip_leading_rows", "1",
         "--source_format", "CSV",
