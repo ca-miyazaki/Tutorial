@@ -1,4 +1,5 @@
 import json
+
 from google.cloud import bigquery
 from google.cloud import storage
 
@@ -46,11 +47,8 @@ def gcs_to_bq(bucket_name, file_name, bq_client):
     # schema.jsonが保存されているGCSのバケットとオブジェクトを指定
     schema_bucket_name = 'miyazaki-tutorial'
     schema_object_name = 'schema.json'
-    # GCSのバケットとオブジェクトを使用して、スキーマ定義JSONファイルを読み込む
-    storage_client = storage.Client()
-    schema_bucket = storage_client.bucket(schema_bucket_name)
-    blob = schema_bucket.blob(schema_object_name)
-    schema_json = blob.download_as_string()
+    # GCSのバケットからschema.jsonを取得
+    schema_json = get_from_gcs(schema_bucket_name, schema_object_name)
     # schemaの設定
     job_config.schema = [bigquery.schema.SchemaField(field['name'], field['type']) for field in json.loads(schema_json)]
     # CSVファイルをスキップする行数(default: 0)
@@ -72,3 +70,20 @@ def gcs_to_bq(bucket_name, file_name, bq_client):
     print('Loaded {} rows.'.format(result.output_rows))
 
     return load_job.job_id
+
+def get_from_gcs(bucket_name, object_name):
+    """GCSのバケットとオブジェクトを使用して、ファイルをstr型で取得する関数
+
+    Args:
+        bucket_name (str): 目的のファイルが保存されているGCSバケット名
+        object_name (str): 目的のファイル名
+
+    Returns:
+        file (str): 取得したファイルの内容
+    """
+    storage_client = storage.Client()
+    bucket = storage_client.bucket(bucket_name)
+    blob = bucket.blob(object_name)
+    file = blob.download_as_string()
+    
+    return file
